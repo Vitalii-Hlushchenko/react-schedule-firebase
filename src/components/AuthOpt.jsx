@@ -1,6 +1,7 @@
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
+import { enqueueSnackbar } from 'notistack'
 
 const AuthOptions = () => {
   const [authUser, setAuthUser] = useState(null);
@@ -27,17 +28,27 @@ const AuthOptions = () => {
       .catch((error) => console.log(error));
   };
 
+  
+
   return (
+
     <div>
       {authUser ? (
+
         <>
+           
           <p>{`Signed In as ${authUser.email}`}</p>
-          <button onClick={userSignOut}>Sign Out</button>
+          <button  onClick={() => {
+          enqueueSnackbar('sign out successful');
+          userSignOut();}}
+          >Sign Out</button>
         </>
       ) : (
         <p>Signed Out</p>
       )}
+      
     </div>
+    
   );
 };
 
