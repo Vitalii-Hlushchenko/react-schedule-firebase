@@ -42,3 +42,13 @@
     display: inline-grid;
     gap: 7px
 }
+
+.BoxElement{
+  display: grid;
+  place-items: center;
+}
+
+.BoxBtn{
+  /* width: 20%;
+  justify-content: center; */
+}
