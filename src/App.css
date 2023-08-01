@@ -1,3 +1,7 @@
+*{
+  margin: 0;
+  padding: 0;
+}
 .App {
   text-align: center;
 }
@@ -48,7 +52,30 @@
   place-items: center;
 }
 
-.BoxBtn{
-  /* width: 20%;
-  justify-content: center; */
+.nav{
+  background-color: #94a59c;
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items:center;
+  margin-bottom: 35px;
+}
+
+.nav-items{
+  display: flex;
+  list-style: none;
+  
+}
+
+.nav-items a{
+  text-decoration: none;
+  margin-right: 25px;
+  color:#fff;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.nav-items a:hover{
+  color:#d0cbcb;
+  transition: all 0.3s;
 }
