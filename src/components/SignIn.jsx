@@ -1,25 +1,39 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+// import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
-import { auth } from "../firebase";
+// import { auth } from "../firebase";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { enqueueSnackbar } from 'notistack'
+import { useAuth } from "../context/authContext";
+
 
 const SignIn = () => {
+  const { signInWithFirebase } = useAuth();
+  const { authUser } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const signIn = (e) => {
+  const handlesignIn = (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
+    signInWithFirebase( email, password)
       .then((userCredential) => {
         console.log(userCredential)
-        enqueueSnackbar('sign in successful');
       })
       .catch((error) => {
         console.log(error);
       });
+
+
+
+
+
+
+      
+
+
+
+
   };
 
   return (
@@ -32,29 +46,35 @@ const SignIn = () => {
     //   </form>
     // </div>
 
-    <Box  component="form" onSubmit={signIn}
+    <Box  component="form" onSubmit={handlesignIn}
     sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}} noValidate autoComplete="off">
-      <div class="BoxElement">
+      <div className="BoxElement">
        <h1>Login</h1>
 
       <TextField
           required
           id="outlined-required"
           label="Enter your email"
-          defaultValue="email"
+          // defaultValue="email"
           value={email} onChange={(e) => setEmail(e.target.value)}
         />
         <TextField
           required
           id="outlined-required"
           label="Enter your password"
-          defaultValue="password"
+          // defaultValue="password"
           value={password} onChange={(e) => setPassword(e.target.value)}        />
 
       <Button className="BoxBtn" variant="contained" type="submit" size="small">Login</Button>
 
       </div>
-
+      <div>
+      {authUser ? (
+        <p>Користувач увійшов у систему: {authUser.email}</p>
+      ) : (
+        <p>Користувач не увійшов у систему.</p>
+      )}
+    </div>
 
     </Box>
   );
