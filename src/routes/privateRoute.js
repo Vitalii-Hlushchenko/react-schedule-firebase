@@ -1,18 +1,16 @@
 import React from 'react';
-import { Route, Link} from 'react-router-dom';
+import { Navigate, useLocation} from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 
-const PrivateRoute = ({ element: Component, ...rest }) => {
+const PrivateRoute = ({ children }) => {
   const { authUser } = useAuth();
+  const location = useLocation();
 
-  return (
-    <Route
-    {...rest}
-    render={props => {
-      return authUser ? <Component {...props} /> : <Link to="/signIn" />
-    }}
-  ></Route>
-  );
+  if (!authUser) {
+    return <Navigate to="/" replace state={{from: location}}/>;
+  }
+
+  return children;
 };
 
 export default PrivateRoute;

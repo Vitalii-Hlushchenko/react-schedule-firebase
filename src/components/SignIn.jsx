@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const SignIn = () => {
   const { signInWithFirebase } = useAuth();
   const { authUser } = useAuth();
-  const navigate = useNavigate;
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ const SignIn = () => {
     signInWithFirebase( email, password)
       .then((userCredential) => {
         console.log(userCredential)
-        navigate ('/')
+        navigate ('/dashboard')
       })
       .catch((error) => {
         console.log(error);
