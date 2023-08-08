@@ -53,24 +53,25 @@
 }
 
 .nav{
-  background-color: #94a59c;
+  border-bottom: 3px solid #94a59c;
   height: 60px;
   display: flex;
   justify-content: flex-end;
   align-items:center;
   margin-bottom: 35px;
+  padding-right: 25px;
 }
 
 .nav-items{
   display: flex;
   list-style: none;
-  
+  align-items:center;
 }
 
 .nav-items a{
   text-decoration: none;
   margin-right: 25px;
-  color:#fff;
+  color: #94a59c;
   text-transform: uppercase;
   font-weight: 600;
 }

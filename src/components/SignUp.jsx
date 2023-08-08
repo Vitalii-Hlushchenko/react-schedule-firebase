@@ -24,7 +24,7 @@ const SignUp = () => {
     
     <Box  component="form" onSubmit={signUp}
     sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}} noValidate autoComplete="off">
-      <div class="BoxElement">
+      <div className="BoxElement">
        <h1>Create new account</h1>
 
       <TextField

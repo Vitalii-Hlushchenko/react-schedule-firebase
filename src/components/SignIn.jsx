@@ -1,15 +1,16 @@
-// import { signInWithEmailAndPassword } from "firebase/auth";
+
 import React, { useState } from "react";
-// import { auth } from "../firebase";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useAuth } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 
 const SignIn = () => {
   const { signInWithFirebase } = useAuth();
   const { authUser } = useAuth();
+  const navigate = useNavigate;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +20,7 @@ const SignIn = () => {
     signInWithFirebase( email, password)
       .then((userCredential) => {
         console.log(userCredential)
+        navigate ('/')
       })
       .catch((error) => {
         console.log(error);
@@ -37,14 +39,7 @@ const SignIn = () => {
   };
 
   return (
-    // <div className="sign-in-container">
-    //   <form className="authForm" onSubmit={signIn}>
-    //     <h1>Log In to your Account</h1>
-    //     <input  type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-    //     <input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-    //     <button onClick={() => enqueueSnackbar('sign in successful')} type="submit">Log In</button>
-    //   </form>
-    // </div>
+    
 
     <Box  component="form" onSubmit={handlesignIn}
     sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}} noValidate autoComplete="off">

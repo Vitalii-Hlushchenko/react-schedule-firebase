@@ -1,7 +1,7 @@
 import React from 'react';
 import { createContext, useState, useEffect, useContext } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, signInWithEmailAndPassword } from "../firebase"; // Припустимо, що `signInWithEmailAndPassword` є функцією із вашого модуля `../firebase`
+import { auth, signInWithEmailAndPassword } from "../firebase"; 
 
 const AuthContext = createContext();
 
@@ -21,11 +21,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   function signInWithFirebase(email, password) {
-    return signInWithEmailAndPassword(auth, email, password); // Викликайте відповідну функцію з Firebase Auth для автентифікації
+    return signInWithEmailAndPassword(auth, email, password); 
   }
 
   const signOutUser = () => {
-    return signOut(auth); // Викликайте відповідну функцію з Firebase Auth для виходу з облікового запису
+    return signOut(auth); 
   };
 
   const value = {
