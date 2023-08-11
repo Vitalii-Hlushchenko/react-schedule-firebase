@@ -64,7 +64,7 @@ const SignIn = () => {
 
       </div>
       <div>
-      {authUser ? (
+      {authUser ? ( navigate("/dashboard"),
         <p>Користувач увійшов у систему: {authUser.email}</p>
       ) : (
         <p>Користувач не увійшов у систему.</p>

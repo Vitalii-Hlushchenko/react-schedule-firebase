@@ -1,9 +1,19 @@
 import React from 'react'
 
-const dashboard = () => {
+import Schedule from '../scheduleComp/Schedule';
+
+
+
+const Dashboard = () => {
+  
+
+
+  
   return (
-    <div>dashboard</div>
+   
+
+      <Schedule/>
   )
 }
 
-export default dashboard
+export default Dashboard

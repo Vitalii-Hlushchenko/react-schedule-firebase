@@ -1,0 +1,45 @@
+#root {
+    --color-event-background: #3d85c6;
+    --color-event-text: #ffffff;
+}
+
+.draggable-container {
+    width: 200px;
+    padding: 0px 5px;
+}
+
+.draggable-header {
+    border: 1px solid #ccc;
+    padding: 5px;
+    background: #f0f0f0;
+    margin-bottom: 15px;
+}
+
+.draggable-item {
+    border-radius: 20px;
+    background: var(--color-event-background);
+    color: var(--color-event-text);
+    padding-left: 10px;
+    border: 0px;
+
+    height: 35px;
+    display: flex;
+    align-items: center;
+
+    cursor: move;
+    margin-bottom: 5px;
+}
+
+
+.draggable-source {
+    opacity: 0.5;
+}
+
+
+#root .scheduler_default_event_inner {
+    border-radius: 20px;
+    background: var(--color-event-background);
+    color: var(--color-event-text);
+    padding-left: 10px;
+    border: 0px;
+}
