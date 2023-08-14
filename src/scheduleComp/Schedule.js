@@ -3,13 +3,16 @@ import {DayPilot, DayPilotScheduler} from "daypilot-pro-react";
 import Zoom from "./Zoom";
 import DraggableItem from './DraggableItem';
 import "./Schedule.css";
+import Button from '@mui/material/Button';
 
 const Schedule = () => {
 
   const today = new Date();
   const firstDayOfWeek = new Date(today);
   firstDayOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
-
+  
+  const currentWeekIndex = DayPilot.Date.today().weekNumber();
+  const todayIndexInWeek = today.getDay();
   const [config, setConfig] = useState({
 
     startDate: new DayPilot.Date(firstDayOfWeek),
@@ -147,6 +150,31 @@ const Schedule = () => {
     loadData();
   }, []);
 
+
+  const handlePrevWeek = () => {
+    const prevWeekStartDate = config.startDate.addDays(-7);
+    setConfig({
+      ...config,
+      startDate: prevWeekStartDate
+    });
+  };
+
+  const handleNextWeek = () => {
+    const nextWeekStartDate = config.startDate.addDays(7);
+    setConfig({
+      ...config,
+      startDate: nextWeekStartDate
+    });
+  };
+
+  const handleToday = () => {
+    const today = new DayPilot.Date().clearTime();
+    setConfig({
+      ...config,
+      startDate: today
+    });
+  };
+
   return (
         
 
@@ -155,14 +183,16 @@ const Schedule = () => {
     <div>
       <div className="toolbar">
         <Zoom onChange={args => zoomChange(args)}/>
-        
-        
+        <Button onClick={handlePrevWeek}>Previous Week</Button>
+        <Button onClick={handleNextWeek}>Next Week</Button>
+        <Button onClick={handleToday}>Today</Button>
       </div>
       <div style={{display: "flex", marginBottom: "30px"}}>
 
         <div className={"draggable-container"}>
+          
           <div className={"draggable-header"}>Drag items to the Scheduler:</div>
-
+          <Button className="Btn" variant="contained" type="submit" size="small">Create</Button>
           <DraggableItem id={101} text={"Item #101"} days={1}></DraggableItem>
           <DraggableItem id={102} text={"Item #102"} days={1}></DraggableItem>
           <DraggableItem id={103} text={"Item #103"} days={1}></DraggableItem>
@@ -170,7 +200,15 @@ const Schedule = () => {
         </div>
 
         <div style={{flex: 1}}>
-          <DayPilotScheduler {...config} ref={schedulerRef }/>
+          <DayPilotScheduler {...config} ref={schedulerRef } onBeforeTimeHeaderRender={args => {
+              if (args.level === "Week") {
+                const weekNumber = args.date.weekNumber();
+                const dayIndex = args.date.getDay();
+                if (weekNumber === currentWeekIndex && dayIndex === todayIndexInWeek) {
+                  args.header.innerHTML = `<div class="current-day">${args.header.innerHTML}</div>`;
+                }
+              }
+            }}/>
         </div>
 
       </div>
