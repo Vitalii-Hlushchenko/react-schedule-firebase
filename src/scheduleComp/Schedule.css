@@ -43,3 +43,38 @@
     padding-left: 10px;
     border: 0px;
 }
+
+.current-day {
+    background-color: #ffff99;
+  }
+
+  .form-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    z-index: 2;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    background-color: #f2f3f5;
+    border-radius:4px;
+    /* border:1px solid black;  */
+
+  }
+
+  .create-form{
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    
+  }
+  
+  .create-form-btn{
+    display: flex;
+    gap: 10px;
+  }
+
+  

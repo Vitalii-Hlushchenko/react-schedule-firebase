@@ -1,19 +1,9 @@
-import React from 'react'
+import React from "react";
 
-import Schedule from '../scheduleComp/Schedule';
-
-
+import Schedule from "../scheduleComp/Schedule";
 
 const Dashboard = () => {
-  
+  return <Schedule />;
+};
 
-
-  
-  return (
-   
-
-      <Schedule/>
-  )
-}
-
-export default Dashboard
+export default Dashboard;

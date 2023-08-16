@@ -1,30 +1,23 @@
+import { Fragment } from "react";
+
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 
-import {   Route,  Routes } from 'react-router-dom';
-
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
+import SignIn from "./layout/SignIn";
+import SignUp from "./layout/SignUp";
 import NavBar from "./components/NavBar";
 import PrivateRoute from "./routes/privateRoute";
 import Home from "./layout/Home";
 import Dashboard from "./layout/Dashboard";
-import { Fragment } from "react";
-
-
 
 const App = () => {
-
-  
   return (
     <Fragment>
-              
-  <NavBar />
-  <Routes>
-                  
-                        
-  <Route path="/" element={<Home/>}/>      
-           
-      <Route
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route
           path="/dashboard"
           element={
             <PrivateRoute>
@@ -32,17 +25,9 @@ const App = () => {
             </PrivateRoute>
           }
         />
-      <Route path="/signIn" element={<SignIn/>}/>
-      <Route path="/signUp" element={<SignUp/>}/>       
-
-  </Routes>
-    
-  
-              
-           
-   
-              
-    
+        <Route path="/signIn" element={<SignIn />} />
+        <Route path="/signUp" element={<SignUp />} />
+      </Routes>
     </Fragment>
   );
 };
