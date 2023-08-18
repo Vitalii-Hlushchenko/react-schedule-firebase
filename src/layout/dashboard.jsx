@@ -1,6 +1,6 @@
 import React from "react";
 
-import Schedule from "../scheduleComp/Schedule";
+import Schedule from "../components/scheduleComp/Schedule";
 
 const Dashboard = () => {
   return <Schedule />;

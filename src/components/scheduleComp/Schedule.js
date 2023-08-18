@@ -3,10 +3,10 @@ import { DayPilot, DayPilotScheduler } from "daypilot-pro-react";
 import "./Schedule.css";
 import Zoom from "./Zoom";
 import DraggableItem from "./DraggableItem";
-import CreateForm from '../components/CreateForm';
+import CreateForm from '../CreateForm';
 
 import Button from "@mui/material/Button";
-import {  TextField } from "@mui/material";
+
 
 
 const Schedule = () => {
@@ -96,29 +96,7 @@ const Schedule = () => {
     },
   });
 
-  // *****************FORM*****
-  const [createFormVisible, setCreateFormVisible] = useState(false);
-  const [newItemText, setNewItemText] = useState("");
-  const [items, setItems] = useState([]);
-
-  const openCreateForm = () => {
-    setCreateFormVisible(true);
-  };
-
-  const closeCreateForm = () => {
-    setCreateFormVisible(false);
-    setNewItemText("");
-  };
-
-  const handleNewItemTextChange = (event) => {
-    setNewItemText(event.target.value);
-  };
-
-  const handleCreateItem = () => {
-    const newItem = { id: items.length + 1, text: newItemText };
-    setItems([...items, newItem]);
-    closeCreateForm();
-  };
+  
 
   const schedulerRef = useRef();
 
@@ -251,23 +229,13 @@ const Schedule = () => {
       </div>
       <div style={{ display: "flex", marginBottom: "30px" }}>
         <div className={"draggable-container"}>
-          <CreateForm/>
-          <div className={"draggable-header"}>Drag items to the Scheduler:</div>
-          <Button
-            onClick={openCreateForm}
-            className="Btn"
-            variant="contained"
-            type="submit"
-            size="small"
-          >
-            Create
-          </Button>
+          <CreateForm />
+          
+          
           <DraggableItem id={101} text={"Item #101"} days={1}></DraggableItem>
           <DraggableItem id={102} text={"Item #102"} days={1}></DraggableItem>
           <DraggableItem id={103} text={"Item #103"} days={1}></DraggableItem>
-          {items.map((newItem) => (
-            <DraggableItem key={newItem.id} text={newItem.text} days={1} />
-          ))}
+          
         </div>
 
         <div style={{ flex: 1 }}>
