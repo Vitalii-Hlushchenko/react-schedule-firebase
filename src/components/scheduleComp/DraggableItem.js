@@ -18,6 +18,7 @@ class DraggableItem extends Component {
         },
         onDrop: args => {
           args.options.element.classList.remove("draggable-source");
+          
         }
       })
     }}>{this.props.text}</div>);

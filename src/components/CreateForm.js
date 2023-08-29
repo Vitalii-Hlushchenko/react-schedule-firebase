@@ -52,17 +52,23 @@ export default function NestedModal() {
     e.preventDefault();
 
     try {
+      const newItem = {  text: newItemText };
+      setItems([...items, newItem]);
+
       await handleCreateItem();
       const docRef = await addDoc(collection(db, "disciplines-db"), {
+        // id: newItem.id,
         Name: name,
-        x: 0, 
-        y: 0, 
+        start: "",
+        end: "",
+        resource: "",
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
+
 
 
   const fetchItems = async () => {
@@ -73,6 +79,7 @@ export default function NestedModal() {
     itemsSnapshot.forEach((doc) => {
       itemsData.push({ id: doc.id, ...doc.data() });
     });
+    console.log(itemsSnapshot, itemsData)
 
     setItems(itemsData);
   };
@@ -123,7 +130,7 @@ export default function NestedModal() {
         </Box>
       </Modal>
       {items.map((item) => (
-        <DraggableItem key={item.id} text={item.Name} x={item.x} y={item.y} />
+        <DraggableItem id={item.id} key={item.id} text={item.Name}  />
       ))}
     </div>
   );

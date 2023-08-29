@@ -4,6 +4,8 @@ import "./Schedule.css";
 import Zoom from "./Zoom";
 import DraggableItem from "./DraggableItem";
 import CreateForm from '../CreateForm';
+import {  updateDoc, doc, getDoc, collection, getDocs,  } from 'firebase/firestore';
+import { db } from '../../firebase'; 
 
 import Button from "@mui/material/Button";
 
@@ -16,10 +18,37 @@ const Schedule = () => {
     today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
   );
 
-  // const currentWeekIndex = DayPilot.Date.today().weekNumber();
-  // const todayIndexInWeek = today.getDay();
+  
 
   const originalStartDate = new DayPilot.Date(firstDayOfWeek);
+
+
+
+  const updateEventInFirestore = async (eventId, newStart, newEnd, newResource) => {
+    try {
+      const eventRef = doc(db, 'disciplines-db', eventId);
+      
+      // Перевірте, чи існує документ перед оновленням
+      const docSnapshot = await getDoc(eventRef);
+      if (docSnapshot.exists()) {
+        // Оновіть документ, оскільки він існує
+        await updateDoc(eventRef, {
+          start: newStart,
+          end: newEnd,
+          resource: newResource,
+        });
+        console.log(`Event ${eventId} updated in Firestore.`);
+      } else {
+        console.error(`Document ${eventId} does not exist.`);
+      }
+    } catch (error) {
+      console.error('Error updating event in Firestore:', error);
+    }
+  };
+  
+  
+  
+  
 
   const [config, setConfig] = useState({
     startDate: new DayPilot.Date(firstDayOfWeek),
@@ -32,40 +61,46 @@ const Schedule = () => {
     treeEnabled: true,
     weekStarts: 1,
 
-    onEventMoved: (args) => {
-      console.log(
-        "Event moved: ",
-        args.e.data.id,
-        args.newStart,
-        args.newEnd,
-        args.newResource
-      );
-      getScheduler().message("Event moved: " + args.e.data.text);
-    },
-    onEventResized: (args) => {
-      console.log(
-        "Event resized: ",
-        args.e.data.id,
-        args.newStart,
-        args.newEnd
-      );
-      getScheduler().message("Event resized: " + args.e.data.text);
-    },
-    onTimeRangeSelected: (args) => {
-      DayPilot.Modal.prompt("New event name", "Event").then((modal) => {
-        getScheduler().clearSelection();
-        if (!modal.result) {
+    
+
+    onEventMoved: async (args) => {
+      try {
+        const eventData = args.e.data;
+        if (!eventData) {
+          console.error("Event data is undefined.");
           return;
         }
-        getScheduler().events.add({
-          id: DayPilot.guid(),
-          text: modal.result,
-          start: args.start,
-          end: args.end,
-          resource: args.resource,
-        });
-      });
+    
+        const eventId = eventData.id;
+        const newStart = args.newStart.toString();
+        const newEnd = args.newEnd.toString();
+        const newResource = args.newResource;
+        // Оновіть значення в Firestore
+        await updateEventInFirestore(eventId, newStart, newEnd, newResource);
+    
+        console.log("Event moved:", eventId, newStart, newEnd);
+        getScheduler().message("Event moved: " + eventData.text);
+      } catch (error) {
+        console.error("Error updating event:", error);
+      }
     },
+    
+    
+    // onTimeRangeSelected: (args) => {
+    //   DayPilot.Modal.prompt("New event name", "Event").then((modal) => {
+    //     getScheduler().clearSelection();
+    //     if (!modal.result) {
+    //       return;
+    //     }
+    //     getScheduler().events.add({
+    //       id: DayPilot.guid(),
+    //       text: modal.result,
+    //       start: args.start,
+    //       end: args.end,
+    //       resource: args.resource,
+    //     });
+    //   });
+    // },
     onBeforeEventRender: (args) => {
       if (!args.data.backColor) {
         args.data.backColor = "#93c47d";
@@ -125,7 +160,30 @@ const Schedule = () => {
     }
   };
 
-  const loadData = (args) => {
+
+
+
+
+
+
+  const loadData = async () => {
+    try {
+      const eventsData = [];
+
+      const querySnapshot = await getDocs(collection(db, "disciplines-db"));
+    querySnapshot.forEach((doc) => {
+      eventsData.push(doc.data());
+    });
+    setConfig({
+      ...config,
+      events: eventsData,
+    });
+
+    console.log("Events loaded from Firebase:", eventsData);
+  } catch (error) {
+    console.error("Error loading events from Firebase:", error);
+  }
+
     const resources = [
       { name: "Resource A", id: "A" },
       { name: "Resource B", id: "B" },
@@ -135,32 +193,23 @@ const Schedule = () => {
       { name: "Resource F", id: "F" },
     ];
 
-    const events = [
-      {
-        id: 107,
-        text: "Reservation 101",
-        start: "2023-08-08T00:00:00",
-        end: "2023-08-08T00:00:00",
-        resource: "A",
-      },
-      {
-        id: 108,
-        text: "Reservation 102",
-        start: "2023-08-09T00:00:00",
-        end: "2023-08-09T00:00:00",
-        resource: "A",
-      },
-    ];
-
-    getScheduler().update({
+  
+    setConfig({
+      ...config,
       resources,
-      events,
     });
+
+    // getScheduler().update({
+    //   resources,
+    //   eventsData,
+      
+      
+    // });
   };
 
   useEffect(() => {
     loadData();
-  });
+  },[]);
 
   const handlePrevWeek = () => {
     const prevWeekStartDate = config.startDate.addDays(-7);
@@ -242,24 +291,7 @@ const Schedule = () => {
           <DayPilotScheduler
             {...config}
             ref={schedulerRef}
-            // onBeforeTimeHeaderRender={(args) => {
-            //   if (args.level === "Day") {
-            //     if (args.date.equalsDay(DayPilot.Date.today())) {
-            //       args.header.style.background = "lightblue";
-            //       args.header.style.color = "black";
-            //       args.header.style.fontWeight = "bold";
-            //     }
-            //   } else if (args.level === "Week") {
-            //     const weekNumber = args.date.weekNumber();
-            //     const dayIndex = args.date.getDay();
-            //     if (
-            //       weekNumber === currentWeekIndex &&
-            //       dayIndex === todayIndexInWeek
-            //     ) {
-            //       args.header.innerHTML = `<div class="current-day">${args.header.innerHTML}</div>`;
-            //     }
-            //   }
-            // }}
+            
           />
         </div>
       </div>
