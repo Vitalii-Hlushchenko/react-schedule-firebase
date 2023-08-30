@@ -6,7 +6,16 @@
 .draggable-container {
     width: 200px;
     padding: 0px 5px;
+    
 }
+
+
+.add-select-container{
+
+  display: flex;
+  flex-direction: column;
+}
+
 
 .draggable-header {
     border: 1px solid #ccc;

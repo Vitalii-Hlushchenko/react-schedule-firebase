@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { DayPilot, DayPilotScheduler } from "daypilot-pro-react";
 import "./Schedule.css";
 import Zoom from "./Zoom";
-import DraggableItem from "./DraggableItem";
+
 import CreateForm from '../CreateForm';
 import {  updateDoc, doc, getDoc, collection, getDocs,  } from 'firebase/firestore';
 import { db } from '../../firebase'; 
@@ -12,6 +13,7 @@ import Button from "@mui/material/Button";
 
 
 const Schedule = () => {
+  const [eventsDay, setEventsDay] = useState([]);
   const today = new Date();
   const firstDayOfWeek = new Date(today);
   firstDayOfWeek.setDate(
@@ -60,6 +62,14 @@ const Schedule = () => {
     durationBarVisible: false,
     treeEnabled: true,
     weekStarts: 1,
+    resources: [
+      { name: "Resource A", id: "A" },
+      { name: "Resource B", id: "B" },
+      { name: "Resource C", id: "C" },
+      { name: "Resource D", id: "D" },
+      { name: "Resource E", id: "E" },
+      { name: "Resource F", id: "F" },
+    ],
 
     
 
@@ -137,7 +147,8 @@ const Schedule = () => {
 
   const getScheduler = () => schedulerRef.current.control;
 
-  const zoomChange = (args) => {
+
+const zoomChange = (args) => {
     switch (args.level) {
       case "week-5":
         setConfig({
@@ -168,44 +179,28 @@ const Schedule = () => {
 
   const loadData = async () => {
     try {
-      const eventsData = [];
-
       const querySnapshot = await getDocs(collection(db, "disciplines-db"));
-    querySnapshot.forEach((doc) => {
-      eventsData.push(doc.data());
-    });
-    setConfig({
-      ...config,
-      events: eventsData,
-    });
 
-    console.log("Events loaded from Firebase:", eventsData);
+      const loadedEvents = [...querySnapshot.docs].map((doc, index) => {
+        const data = doc.data()
+        console.log(data.start, "2023-08-29T00:00:00")
+
+        return{
+          id: doc.id,
+              text: data.Name,
+          start: data.end,
+          end: data.end,
+            resource: data.resource,
+        }
+      }).filter((item) => item.start)
+
+      setEventsDay(loadedEvents)
+
   } catch (error) {
     console.error("Error loading events from Firebase:", error);
   }
-
-    const resources = [
-      { name: "Resource A", id: "A" },
-      { name: "Resource B", id: "B" },
-      { name: "Resource C", id: "C" },
-      { name: "Resource D", id: "D" },
-      { name: "Resource E", id: "E" },
-      { name: "Resource F", id: "F" },
-    ];
-
-  
-    setConfig({
-      ...config,
-      resources,
-    });
-
-    // getScheduler().update({
-    //   resources,
-    //   eventsData,
-      
-      
-    // });
   };
+
 
   useEffect(() => {
     loadData();
@@ -244,52 +239,23 @@ const Schedule = () => {
       </div>
       <div className="form-container">
         
-        {/* {createFormVisible && (
-          <div className="create-form">
-            <TextField
-              required
-              id="outlined-required"
-              label="Enter data"
-              value={newItemText}
-              onChange={handleNewItemTextChange}
-            />
-            <div className="form-btn">
-              <Button
-                className="Btn"
-                variant="contained"
-                type="submit"
-                size="small"
-                onClick={handleCreateItem}
-              >
-                Create
-              </Button>
-              <Button
-                className="Btn"
-                variant="contained"
-                type="submit"
-                size="small"
-                onClick={closeCreateForm}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )} */}
+        
+               
       </div>
       <div style={{ display: "flex", marginBottom: "30px" }}>
         <div className={"draggable-container"}>
           <CreateForm />
           
           
-          <DraggableItem id={101} text={"Item #101"} days={1}></DraggableItem>
+          {/* <DraggableItem id={101} text={"Item #101"} days={1}></DraggableItem>
           <DraggableItem id={102} text={"Item #102"} days={1}></DraggableItem>
-          <DraggableItem id={103} text={"Item #103"} days={1}></DraggableItem>
+          <DraggableItem id={103} text={"Item #103"} days={1}></DraggableItem> */}
           
         </div>
 
         <div style={{ flex: 1 }}>
           <DayPilotScheduler
-            {...config}
+            {...config} events={eventsDay}
             ref={schedulerRef}
             
           />

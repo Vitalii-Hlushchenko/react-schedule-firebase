@@ -4,9 +4,12 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
 import DraggableItem from "./scheduleComp/DraggableItem";
 import { db } from "../firebase";
-import {  addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { useEffect } from "react";
 
 const style = {
@@ -24,27 +27,26 @@ const style = {
 };
 
 export default function NestedModal() {
-  const [newItemText, setNewItemText] = useState("");
+  const [newItem, setNewItem] = useState({ text: "", x: 0, y: 0 });
   const [items, setItems] = useState([]);
-  const [name, setName] = useState("");
-
+  const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = React.useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleNewItemTextChange = (event) => {
-    setNewItemText(event.target.value);
-    setName(event.target.value); 
+    setNewItem({ ...newItem, text: event.target.value });
   };
 
   const handleCreateItem = async () => {
-    const newItem = { id: items.length + 1, text: newItemText, x: 0, y: 0 };
-    setItems([...items, newItem]);
-    console.log(newItem);
+    setItems((prevItems) => [...prevItems, newItem]);
+    setNewItem({ text: "", x: 0, y: 0 });
     handleClose();
   };
 
@@ -52,24 +54,20 @@ export default function NestedModal() {
     e.preventDefault();
 
     try {
-      const newItem = {  text: newItemText };
-      setItems([...items, newItem]);
-
       await handleCreateItem();
       const docRef = await addDoc(collection(db, "disciplines-db"), {
-        // id: newItem.id,
-        Name: name,
+        Name: newItem.text,
         start: "",
         end: "",
         resource: "",
       });
       console.log("Document written with ID: ", docRef.id);
+
+      fetchItems();
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
-
-
 
   const fetchItems = async () => {
     const itemsCollection = collection(db, "disciplines-db");
@@ -79,7 +77,6 @@ export default function NestedModal() {
     itemsSnapshot.forEach((doc) => {
       itemsData.push({ id: doc.id, ...doc.data() });
     });
-    console.log(itemsSnapshot, itemsData)
 
     setItems(itemsData);
   };
@@ -88,29 +85,46 @@ export default function NestedModal() {
     fetchItems();
   }, []);
 
-    
-
+  const handleSelectItem = (event) => {
+    const selectedItemName = event.target.value;
+    const selectedItemId = items.find((item) => item.Name === selectedItemName)?.id;
+    setSelectedItem({ id: selectedItemId, Name: selectedItemName });
+  };
 
   return (
-    <div>
+    <div className="add-select-container">
       <Button onClick={handleOpen}>Додати предмет</Button>
-
+      <Select
+       labelId="demo-simple-select-autowidth-label"
+       id="demo-simple-select-autowidth"
+        label="jgfgf"
+        placeholder="kjhkj"
+        value={selectedItem ? selectedItem.Name : ""}
+        onChange={handleSelectItem}
+      >
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        {items.map((item) => (
+          <MenuItem key={item.id} value={item.Name}>
+            {item.Name}
+          </MenuItem>
+        ))}
+      </Select>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style, width: 400 }}  >
-          <form className="create-form" onSubmit={(e) => {
-            handleCreateItem();
-            addTodo(e);
-          }}>
+        <Box sx={{ ...style, width: 400 }}>
+          <form className="create-form" onSubmit={addTodo}>
             <TextField
               required
               type="text"
               id="discipline"
               label="Введіть назву"
+              value={newItem.text}
               onChange={handleNewItemTextChange}
             />
             <div className="create-form-btn">
@@ -129,13 +143,7 @@ export default function NestedModal() {
           </form>
         </Box>
       </Modal>
-      {items.map((item) => (
-        <DraggableItem id={item.id} key={item.id} text={item.Name}  />
-      ))}
+      {selectedItem && <DraggableItem id={selectedItem.id} key={selectedItem.id} text={selectedItem.Name} />}
     </div>
   );
 }
-
-
-
-
