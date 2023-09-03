@@ -5,10 +5,14 @@ import "./Schedule.css";
 import Zoom from "./Zoom";
 
 import CreateForm from '../CreateForm';
-import {  updateDoc, doc, getDoc, collection, getDocs,  } from 'firebase/firestore';
+import {  updateDoc, doc, getDoc, collection, getDocs, deleteDoc,  } from 'firebase/firestore';
 import { db } from '../../firebase'; 
 
 import Button from "@mui/material/Button";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { renderToString } from 'react-dom/server';
+
+
 
 
 
@@ -24,7 +28,7 @@ const Schedule = () => {
 
   const originalStartDate = new DayPilot.Date(firstDayOfWeek);
 
-
+  
 
   const updateEventInFirestore = async (eventId, newStart, newEnd, newResource) => {
     try {
@@ -49,8 +53,26 @@ const Schedule = () => {
   };
   
   
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      const eventRef = doc(db, 'disciplines-db', eventId);
+      await deleteDoc(eventRef);
+      console.log(`Event ${eventId} deleted in Firestore.`);
+  
+      // Оновіть стан, щоб подія була видалена з графіка
+      setEventsDay((prevEvents) =>
+        prevEvents.filter((event) => event.id !== eventId)
+      );
+    } catch (error) {
+      console.error("Error deleting event in Firestore:", error);
+    }
+  };
   
   
+  const deleteIconStyle = { color: 'red' };
+  const deleteIconHtml = renderToString( <DeleteIcon style={{ deleteIconStyle }}/>);
+
+
 
   const [config, setConfig] = useState({
     startDate: new DayPilot.Date(firstDayOfWeek),
@@ -85,7 +107,7 @@ const Schedule = () => {
         const newStart = args.newStart.toString();
         const newEnd = args.newEnd.toString();
         const newResource = args.newResource;
-        // Оновіть значення в Firestore
+        
         await updateEventInFirestore(eventId, newStart, newEnd, newResource);
     
         console.log("Event moved:", eventId, newStart, newEnd);
@@ -95,30 +117,31 @@ const Schedule = () => {
       }
     },
     
+    onEventDeleted: (args) => {
+      // Отримайте ідентифікатор події
+      const eventId = args.e.data.id;
+  
+      // Викличте функцію видалення події
+      handleDeleteEvent(eventId);
+    },
+  
     
-    // onTimeRangeSelected: (args) => {
-    //   DayPilot.Modal.prompt("New event name", "Event").then((modal) => {
-    //     getScheduler().clearSelection();
-    //     if (!modal.result) {
-    //       return;
-    //     }
-    //     getScheduler().events.add({
-    //       id: DayPilot.guid(),
-    //       text: modal.result,
-    //       start: args.start,
-    //       end: args.end,
-    //       resource: args.resource,
-    //     });
-    //   });
-    // },
     onBeforeEventRender: (args) => {
       if (!args.data.backColor) {
         args.data.backColor = "#93c47d";
       }
       args.data.borderColor = "darker";
       args.data.fontColor = "white";
-
-      args.data.areas = [];
+      
+      args.data.areas = [{
+        right: 4,
+        top: 8,
+        height: 18,
+        width: 18,
+        html: deleteIconHtml,
+        onClick: () => handleDeleteEvent(args.data.id), 
+      }];
+      
       if (args.data.locked) {
         args.data.areas.push({
           right: 4,
@@ -139,6 +162,7 @@ const Schedule = () => {
         });
       }
     },
+    
   });
 
   
@@ -180,26 +204,29 @@ const zoomChange = (args) => {
   const loadData = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "disciplines-db"));
-
-      const loadedEvents = [...querySnapshot.docs].map((doc, index) => {
-        const data = doc.data()
-        console.log(data.start, "2023-08-29T00:00:00")
-
-        return{
-          id: doc.id,
-              text: data.Name,
-          start: data.end,
-          end: data.end,
+  
+      const loadedEvents = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const start = data.start; 
+  
+        if (start) {
+          loadedEvents.push({
+            id: doc.id,
+            text: data.Name,
+            start: start,
+            end: data.end,
             resource: data.resource,
+          });
         }
-      }).filter((item) => item.start)
-
-      setEventsDay(loadedEvents)
-
-  } catch (error) {
-    console.error("Error loading events from Firebase:", error);
-  }
+      });
+  
+      setEventsDay(loadedEvents);
+    } catch (error) {
+      console.error("Error loading events from Firebase:", error);
+    }
   };
+  
 
 
   useEffect(() => {

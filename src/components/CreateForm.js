@@ -102,9 +102,7 @@ export default function NestedModal() {
         value={selectedItem ? selectedItem.Name : ""}
         onChange={handleSelectItem}
       >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
+        
         {items.map((item) => (
           <MenuItem key={item.id} value={item.Name}>
             {item.Name}
