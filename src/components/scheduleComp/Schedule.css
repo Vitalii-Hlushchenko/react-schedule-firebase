@@ -25,15 +25,15 @@
 }
 
 .draggable-item {
+    display: inline-table;
     border-radius: 20px;
     background: var(--color-event-background);
     color: var(--color-event-text);
     padding-left: 10px;
     border: 0px;
 
-    height: 35px;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
 
     cursor: move;
     margin-bottom: 5px;
@@ -86,7 +86,11 @@
     gap: 10px;
   }
 
-  .white-icon {
-    color: white;
-  }
+  /* .icon {
+    width: 16px;
+    height: 16px;
+  } */
   
+  .MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    display: flex;
+  }

@@ -1,15 +1,18 @@
 import * as React from "react";
 import { useState } from "react";
+import "../components/scheduleComp/Schedule.css";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { TextField } from "@mui/material";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 import DraggableItem from "./scheduleComp/DraggableItem";
 import { db } from "../firebase";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useEffect } from "react";
 
 const style = {
@@ -27,7 +30,7 @@ const style = {
 };
 
 export default function NestedModal() {
-  const [newItem, setNewItem] = useState({ text: "", x: 0, y: 0 });
+  const [newItem, setNewItem] = useState({ text: "", lectures: "", labs: "", examOrCredit: "", x: 0, y: 0 });
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = React.useState(false);
@@ -57,6 +60,9 @@ export default function NestedModal() {
       await handleCreateItem();
       const docRef = await addDoc(collection(db, "disciplines-db"), {
         Name: newItem.text,
+        lectures: newItem.lectures,
+        labs: newItem.labs,
+        finalCheck: newItem.examOrCredit,
         start: "",
         end: "",
         resource: "",
@@ -68,6 +74,20 @@ export default function NestedModal() {
       console.error("Error adding document: ", e);
     }
   };
+
+
+  const handleDeleteItem = async (itemId) => {
+    try {
+      // Видаліть предмет з бази даних на основі itemId
+      await deleteDoc(doc(db, "disciplines-db", itemId));
+      
+      // Оновіть стан списку предметів, щоб видалити вибраний предмет
+      setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    } catch (error) {
+      console.error("Помилка видалення предмету: ", error);
+    }
+  };
+  
 
   const fetchItems = async () => {
     const itemsCollection = collection(db, "disciplines-db");
@@ -104,8 +124,11 @@ export default function NestedModal() {
       >
         
         {items.map((item) => (
-          <MenuItem key={item.id} value={item.Name}>
+          <MenuItem key={item.id} value={item.Name} style={{display:"flex"}}>
             {item.Name}
+
+            <DeleteIcon onClick={() => handleDeleteItem(item.id)}  style={{ fontSize: "16px" }}/>
+            
           </MenuItem>
         ))}
       </Select>
@@ -116,7 +139,7 @@ export default function NestedModal() {
         aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style, width: 400 }}>
-          <form className="create-form" onSubmit={addTodo}>
+          {/* <form className="create-form" onSubmit={addTodo}>
             <TextField
               required
               type="text"
@@ -124,7 +147,46 @@ export default function NestedModal() {
               label="Введіть назву"
               value={newItem.text}
               onChange={handleNewItemTextChange}
-            />
+            /> */}
+            <form className="create-form" onSubmit={addTodo}>
+              <TextField
+                required
+                type="text"
+                id="discipline"
+                label="Назва предмету"
+                value={newItem.text}
+                onChange={handleNewItemTextChange}
+              />
+              <TextField
+                required
+                type="number"
+                id="lectures"
+                label="Кількість лекцій"
+                value={newItem.lectures}
+                onChange={(event) => setNewItem({ ...newItem, lectures: event.target.value })}
+              />
+              <TextField
+                required
+                type="number"
+                id="labs"
+                label="Кількість лабораторних"
+                value={newItem.labs}
+                onChange={(event) => setNewItem({ ...newItem, labs: event.target.value })}
+              />
+              <Select
+                required
+                labelId="exam-or-credit-label"
+                id="exam-or-credit"
+                label="Тип оцінювання"
+                value={newItem.examOrCredit}
+                onChange={(event) => setNewItem({ ...newItem, examOrCredit: event.target.value })}
+              >
+                <MenuItem value="exam">Іспит</MenuItem>
+                <MenuItem value="credit">Залік</MenuItem>
+              </Select>
+              
+
+            
             <div className="create-form-btn">
               <Button variant="outlined" color="error" onClick={handleClose}>
                 Скасувати

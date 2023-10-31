@@ -13,9 +13,9 @@ const Zoom = ({ onChange }) => {
 
     return (
         <span className="toolbar-item">
-            Zoom:
-            <label><input type="radio" name="zoom" value="week-5" onChange={handleChange} checked={level === "week-5"} /> Week-5</label>
-            <label><input type="radio" name="zoom" value="week-7"  onChange={handleChange} checked={level === "week-7"} /> Week-7</label>
+            Робочий тиждень:
+            <label><input type="radio" name="zoom" value="week-5" onChange={handleChange} checked={level === "week-5"} /> 5 днів</label>
+            <label><input type="radio" name="zoom" value="week-7"  onChange={handleChange} checked={level === "week-7"} /> 7 днів</label>
         </span>
     );
 }

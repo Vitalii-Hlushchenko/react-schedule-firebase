@@ -24,19 +24,19 @@ const NavBar = () => {
  <nav className='nav'>
        <ul className='nav-items'>
           <li>
-             <NavLink to="/">Home</NavLink>
+             {/* <NavLink to="/">Home</NavLink> */}
           </li>
           <li>
-             <NavLink to="/dashboard">dashboard</NavLink>
+             <NavLink to="/dashboard">Головна</NavLink>
           </li>
           <li>
-             <NavLink to="/signIn">SignIn</NavLink>
+             <NavLink to="/signIn">Увійти</NavLink>
           </li>
           <li>
-             <NavLink to="/signUp">SignUp</NavLink>
+             <NavLink to="/signUp">Зареєструватись</NavLink>
           </li>
           <li>
-          <Button className="SignOutBtn" variant="outlined" color="error" onClick={handleSignOut} size="small">SignOut</Button>
+          <Button className="SignOutBtn" variant="outlined" color="error" onClick={handleSignOut} size="small">Вийти</Button>
 
           </li>
        </ul>

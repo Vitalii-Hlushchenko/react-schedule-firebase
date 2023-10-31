@@ -5,7 +5,7 @@ import "./Schedule.css";
 import Zoom from "./Zoom";
 
 import CreateForm from '../CreateForm';
-import {  updateDoc, doc, getDoc, collection, getDocs, deleteDoc,  } from 'firebase/firestore';
+import {  updateDoc, doc, getDoc, collection, getDocs, } from 'firebase/firestore';
 import { db } from '../../firebase'; 
 
 import Button from "@mui/material/Button";
@@ -56,9 +56,13 @@ const Schedule = () => {
   const handleDeleteEvent = async (eventId) => {
     try {
       const eventRef = doc(db, 'disciplines-db', eventId);
-      await deleteDoc(eventRef);
+      await updateDoc(eventRef, {
+        resource: "",
+        end: "",
+        start: ""
+      });
       console.log(`Event ${eventId} deleted in Firestore.`);
-  
+    
       // Оновіть стан, щоб подія була видалена з графіка
       setEventsDay((prevEvents) =>
         prevEvents.filter((event) => event.id !== eventId)
@@ -69,8 +73,9 @@ const Schedule = () => {
   };
   
   
-  const deleteIconStyle = { color: 'red' };
-  const deleteIconHtml = renderToString( <DeleteIcon style={{ deleteIconStyle }}/>);
+  
+  
+  const deleteIconHtml = renderToString(<DeleteIcon style={{ fontSize: "16px" }}/>);
 
 
 
@@ -85,12 +90,12 @@ const Schedule = () => {
     treeEnabled: true,
     weekStarts: 1,
     resources: [
-      { name: "Resource A", id: "A" },
-      { name: "Resource B", id: "B" },
-      { name: "Resource C", id: "C" },
-      { name: "Resource D", id: "D" },
-      { name: "Resource E", id: "E" },
-      { name: "Resource F", id: "F" },
+      { name: "Перша пара", id: "A" },
+      { name: "Друга пара", id: "B" },
+      { name: "Третя пара", id: "C" },
+      { name: "Четверта пара", id: "D" },
+      { name: "П'ята пара", id: "E" },
+      { name: "Шоста пара", id: "F" },
     ],
 
     
@@ -149,7 +154,7 @@ const Schedule = () => {
           height: 18,
           width: 18,
           symbol: "icons/daypilot.svg#padlock",
-          fontColor: "white",
+          color: "error",
         });
       } else if (args.data.plus) {
         args.data.areas.push({
@@ -260,9 +265,9 @@ const zoomChange = (args) => {
     <div>
       <div className="toolbar">
         <Zoom onChange={(args) => zoomChange(args)} />
-        <Button onClick={handlePrevWeek}>Previous Week</Button>
-        <Button onClick={handleNextWeek}>Next Week</Button>
-        <Button onClick={handleToday}>Today</Button>
+        <Button onClick={handlePrevWeek}>Попередній тиждень</Button>
+        <Button onClick={handleNextWeek}>Наступний тиждень</Button>
+        <Button onClick={handleToday}>Поточний</Button>
       </div>
       <div className="form-container">
         
