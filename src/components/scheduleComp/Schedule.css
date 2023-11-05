@@ -32,6 +32,7 @@
     padding-left: 10px;
     border: 0px;
 
+    min-height: 35px;
     display: flex;
     /* align-items: center; */
 

@@ -279,9 +279,7 @@ const zoomChange = (args) => {
           <CreateForm />
           
           
-          {/* <DraggableItem id={101} text={"Item #101"} days={1}></DraggableItem>
-          <DraggableItem id={102} text={"Item #102"} days={1}></DraggableItem>
-          <DraggableItem id={103} text={"Item #103"} days={1}></DraggableItem> */}
+          
           
         </div>
 
